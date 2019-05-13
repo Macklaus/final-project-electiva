@@ -16,6 +16,7 @@
 <style>
 .navbar-container{
     width: 100vw;
+    min-width: 300px;
     background-color: #FFFFFF;
     padding: 0.8em 1.1em;
     -webkit-box-shadow: 0px 6px 6px 1px rgba(0,0,0,0.75);
@@ -40,6 +41,25 @@
 .link{
     margin: 0 20px;
     font-size: 20px;
+}
+
+@media (max-width: 676px) {
+    .navbar-title{
+        width: 100%;
+        text-align: center;
+    }
+}
+@media (max-width: 425px) {
+    .navbar-container{
+        padding-left: 0;
+        padding-right: 0;
+    }
+    .link-container{
+        justify-content: space-around;
+    }
+    .link{
+        margin: 5px;
+    }
 }
 </style>
 

@@ -28,6 +28,19 @@ export default {
     color: #ffffff;
     margin-bottom: 40px;
 }
+
+@media (max-width: 768px) {
+    .home-container{
+        width: 90%;
+    }
+}
+
+@media (max-width: 425px) {
+    .home-container{
+        width: 100%;
+        padding: 1.3em 0;
+    }
+}
 </style>
 
 
