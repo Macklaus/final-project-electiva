@@ -41,6 +41,11 @@
 .link{
     margin: 0 20px;
     font-size: 20px;
+    color: #2C1641;
+}
+.link:hover{
+    color: #3fa0f7;
+    /* color: rgb(169, 92, 241); */
 }
 
 @media (max-width: 676px) {
