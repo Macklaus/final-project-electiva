@@ -2,20 +2,46 @@
     <div class="singup-container">
         <div class="card">
             <h2 class="card-title">Sing Up</h2>
-            <input type="text" class="input-form" placeholder="Name" v-model="email">
-            <input type="text" class="input-form" placeholder="Lastname" v-model="email">
-            <input type="text" class="input-form" placeholder="Username or email" v-model="email">
+            <input type="text" class="input-form" placeholder="Complete name" v-model="realm">
+            <input type="text" class="input-form" placeholder="Username" v-model="username">
+            <input type="text" class="input-form" placeholder="Email" v-model="email">
             <input type="password" class="input-form" placeholder="Password" v-model="password">
-            <button class="button submit-singup">Sing In</button>
+            <button class="button submit-singup" @click="registerNewUser()" :disabled="loading">
+                {{ loading ? 'loading' : 'Sing Up' }}
+            </button>
         </div>
     </div>
 </template>
 
 <script>
+import Axios from 'axios';
 export default {
     data(){
         return {
-
+            realm: '',
+            username: '',
+            email: '',
+            password: '',
+            loading: false
+        }
+    },
+    methods: {
+        registerNewUser() {
+            this.loading = true;
+            Axios.post(`http://localhost:3000/api/Users`, {
+                realm: this.realm,
+                username: this.username,
+                email: this.email,
+                emailVerified: true,
+                password: this.password
+            }).then(response => {
+                this.$noty.success("User has been created successfully");
+                this.$router.push('login');
+                this.loading = false;
+            }).catch(({response}) => {
+                this.$noty.error("Oops, something went wrong!");
+                this.loading = false;
+            });
         }
     }
 }
