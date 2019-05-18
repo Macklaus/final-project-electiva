@@ -4,17 +4,52 @@
             <h2 class="card-title">Login to News</h2>
             <input type="text" class="input-form" placeholder="Username or email" v-model="email">
             <input type="password" class="input-form" placeholder="Password" v-model="password">
-            <button class="button submit-login">Sing In</button>
+            <button class="button submit-login" @click="login()" :disabled="loading">
+                {{loading ? 'loading' : 'Sing In'}}
+            </button>
         </div>
     </div>
 </template>
 
 <script>
+import Axios from 'axios';
+import config from '@/config';
 export default {
     data(){
         return {
             email: '',
-            password: ''
+            password: '',
+            loading: false
+        }
+    },
+    methods: {
+        login(){
+            this.loading = true;
+            Axios.post(config.URLs.LOGIN, {
+                email: this.email,
+                password: this.password
+            }).then(response => {
+                if(response){
+                    localStorage.setItem(config.STORAGE.AUTH, JSON.stringify(response.data));
+                    this.$root.auth = response.data;
+                    this.$router.push(config.ROUTES.HOME);
+                    this.$noty.success(config.MESSAGES.SUCCESS_LOGIN);
+                } else {
+                    this.$noty.error(config.MESSAGES.ERROR);
+                }
+                this.loading = false;
+            }).catch(({response}) => {
+                if(response){
+                    if(response.status = 401){
+                        if(response.data.error){
+                            this.$noty.error(response.data.error.message);
+                        }
+                    }
+                } else {
+                    this.$noty.error(config.MESSAGES.ERROR);
+                }
+                this.loading = false;
+            });
         }
     }
 }

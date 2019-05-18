@@ -4,14 +4,51 @@
         <div class="link-container">
             <div class="left-links">
                 <router-link to="/home" class="link">Home</router-link>
+                <router-link to="/create-new" class="link" v-if="isUserAuthenticated">Create news</router-link>
             </div>
             <div class="right-links">
-                <router-link to="/login" class="link">Sing In</router-link>
-                <router-link to="/singup" class="link">Sing Up</router-link>
+                <router-link to="/login" class="link" v-if="!isUserAuthenticated">Sing In</router-link>
+                <router-link to="/singup" class="link" v-if="!isUserAuthenticated">Sing Up</router-link>
+                <a href="#" class="link" v-if="isUserAuthenticated" @click="logout()">Logout</a>
             </div>
         </div>
     </div>
 </template>
+
+<script>
+import Axios from 'axios';
+import config from '@/config';
+export default {
+    computed: {
+        isUserAuthenticated(){
+            return this.$root.auth.id;
+        }
+    },
+    methods: {
+        logout(){
+            if(!this.isUserAuthenticated){
+                return;
+            }        
+            Axios.post(config.URLs.LOGOUT + `${this.$root.auth.id}`)
+            .then(response => {
+                if(response){
+                    if(response.status == 204){
+                        this.$root.auth = {};
+                        localStorage.removeItem(config.STORAGE.AUTH);
+                        this.$noty.info(config.MESSAGES.LOGOUT);
+                        this.$router.push(config.ROUTES.HOME);
+                    }
+                } else {
+                    this.$noty.error(config.MESSAGES.ERROR);
+                }
+            }).catch(({response}) => {
+                this.$noty.error(config.MESSAGES.ERROR);
+            });
+        }
+    }
+}
+</script>
+
 
 <style>
 .navbar-container{

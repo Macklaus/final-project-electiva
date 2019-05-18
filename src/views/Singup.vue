@@ -15,6 +15,7 @@
 
 <script>
 import Axios from 'axios';
+import config from '@/config';
 export default {
     data(){
         return {
@@ -28,18 +29,18 @@ export default {
     methods: {
         registerNewUser() {
             this.loading = true;
-            Axios.post(`http://localhost:3000/api/Users`, {
+            Axios.post(config.URLs.SING_UP, {
                 realm: this.realm,
                 username: this.username,
                 email: this.email,
                 emailVerified: true,
                 password: this.password
             }).then(response => {
-                this.$noty.success("User has been created successfully");
-                this.$router.push('login');
+                this.$noty.success(config.MESSAGES.SING_UP);
+                this.$router.push(config.ROUTES.LOGIN);
                 this.loading = false;
             }).catch(({response}) => {
-                this.$noty.error("Oops, something went wrong!");
+                this.$noty.error(config.MESSAGES.ERROR);
                 this.loading = false;
             });
         }

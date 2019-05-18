@@ -7,10 +7,29 @@
 
 <script>
 import New from '@/components/New.vue';
+import Axios from 'axios';
+import config from '@/config';
 
 export default {
     components: {
         New
+    },
+    mounted(){
+        this.getTypes();
+    },
+    methods: {
+        getTypes(){
+            if(localStorage.getItem(config.STORAGE.TYPES)){
+                this.$root.typeNews = JSON.parse(localStorage.getItem(config.STORAGE.TYPES));
+                return;
+            } 
+            Axios.get(config.URLs.TYPES).then(response => {
+                localStorage.setItem(config.STORAGE.TYPES, JSON.stringify(response.data));
+                this.$root.typeNews = response.data;
+            }).catch(({response}) => {
+                this.$noty.error(config.MESSAGES.TYPES_ERROR);
+            })
+        }
     }
 }
 </script>
