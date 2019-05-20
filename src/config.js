@@ -11,14 +11,17 @@ export default {
         SUCCESS_LOGIN: 'Successfully login!',
         LOGOUT: 'you are logout now',
         TYPES_ERROR: 'Oops, something went wrong getting types of news',
-        SING_UP: 'User has been created successfully'
+        SING_UP: 'User has been created successfully',
+        NO_IMAGE_SET: 'Please, choose a image for the new',
+        NEW_CREATED: 'New has been created successfully!'
     },
     URLs: {
         LOGIN: urlUsers + '/login',
         LOGOUT: urlUsers + '/logout?access_token=',
         TYPES: url + '/TypeNews',
         SING_UP: urlUsers,
-        CLOUDINARY: 'https://api.cloudinary.com/v1_1/bahdcoder/image/upload'
+        CLOUDINARY: 'https://api.cloudinary.com/v1_1/bahdcoder/image/upload',
+        NEWS: url + '/News'
     },
     ROUTES: {
         HOME: 'home',

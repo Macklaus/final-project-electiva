@@ -34,7 +34,9 @@
             v-model="content" 
             placeholder="Type some content...">
             </textarea>
-            <button class="button create-new-button" @click="createNew()">Create New</button>
+            <button class="button create-new-button" @click="createNew()" :disabled="loading">
+                {{loading ? 'loading' : 'Create News'}}
+            </button>
         </div>
     </div>
 </div>
@@ -44,6 +46,7 @@
 import PictureInput from 'vue-picture-input';
 import config from '@/config';
 import Axios from 'axios';
+import { isNullOrUndefined } from 'util';
 export default {
     mounted(){
         this.getTypes();
@@ -57,7 +60,8 @@ export default {
             types: [],
             type: {},
             title: '',
-            content: ''
+            content: '',
+            loading: false
         }
     },
     methods: {
@@ -82,14 +86,52 @@ export default {
             })
         },
         createNew(){
+            if(isNullOrUndefined(this.image)){
+                this.$noty.warning(config.MESSAGES.NO_IMAGE_SET);
+                return;
+            }
+            if(!this.$root.auth.userId){
+                this.$noty.error(config.MESSAGES.ERROR);
+                this.$router.push(config.ROUTES.LOGIN);
+                return;
+            }
+            this.loading = true;
             const form = new FormData();
             form.append('file', this.image);
             form.append('upload_preset', process.env.VUE_APP_CLOUDINARY_PRESET);
             form.append('api_key', process.env.VUE_APP_CLOUDINARY_API_KEY);
             Axios.post(config.URLs.CLOUDINARY, form).then(response => {
-                response.data.secure_url;
+                Axios.post(config.URLs.NEWS, {
+                    type: this.type.typeId,
+                    title: this.title,
+                    content: this.content,
+                    imageUrl: response.data.secure_url,
+                    userId: this.$root.auth.userId
+                },{
+                    headers: {
+                        Authorization: `${this.$root.auth.id}`
+                    }
+                }).then(response => {
+                    if(response){
+                        if(response.status == 200){
+                            this.$noty.success(config.MESSAGES.NEW_CREATED);
+                            this.$router.push(config.ROUTES.HOME);
+                        }
+                    } else {
+                        this.$noty.error(config.MESSAGES.ERROR);
+                    }
+                    this.loading = false;
+                }).catch(({response}) => {
+                    console.error(response);
+                    this.$noty.error(config.MESSAGES.ERROR);
+                    if(response.status == 401){
+                        this.$router.push(config.ROUTES.LOGIN);
+                    }
+                    this.loading = false;
+                });
             }).catch(() => {
                 this.$noty.error(config.MESSAGES.ERROR);
+                this.loading = false;
             });
         }
     }
@@ -99,7 +141,6 @@ export default {
 <style>
     .create-new-container{
         width: 100%;
-        height: 84vh;
     }
     .create-new-title{
         text-align: center;
@@ -145,6 +186,25 @@ export default {
     }
     .set-image:hover{
         background: linear-gradient(to right, rgba(179,220,237,1) 0%, rgba(41,184,229,1) 50%, rgba(188,224,238,1) 100%);
+    }
+
+    @media (max-width: 768px) {
+        .create-new-data-container{
+            padding-right: 10px;
+        }
+    }
+    @media (max-width: 610px) {
+        .create-new-image-container, .create-new-data-container{
+            width: 100%;
+        }
+        .create-new-data-container{
+            padding: 20px 50px;
+        }
+    }
+    @media (max-width: 425px) {
+        .create-new-data-container{
+            padding: 20px 10px;
+        }
     }
 </style>
 
