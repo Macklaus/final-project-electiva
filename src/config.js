@@ -17,7 +17,8 @@ export default {
         LOGIN: urlUsers + '/login',
         LOGOUT: urlUsers + '/logout?access_token=',
         TYPES: url + '/TypeNews',
-        SING_UP: urlUsers
+        SING_UP: urlUsers,
+        CLOUDINARY: 'https://api.cloudinary.com/v1_1/bahdcoder/image/upload'
     },
     ROUTES: {
         HOME: 'home',

@@ -40,7 +40,7 @@ export default {
                 this.loading = false;
             }).catch(({response}) => {
                 if(response){
-                    if(response.status = 401){
+                    if(response.status == 401){
                         if(response.data.error){
                             this.$noty.error(response.data.error.message);
                         }
@@ -75,12 +75,12 @@ export default {
     display: flex;
     flex-flow: row wrap;
 }
-.card .card-title, .input-form, .button{
+.card-title, .input-form, .button{
     width: 100%;
     margin: 10px 0;
 }
 
-.card .card-title{
+.card-title{
     font-size: 35px;
     margin-bottom: 40px;
     padding-bottom: 10px;

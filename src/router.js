@@ -4,6 +4,7 @@ import Login from '@/views/Login.vue';
 import Singup from '@/views/Singup.vue';
 import Home from '@/views/Home.vue';
 import config from '@/config';
+import CreateNew from '@/views/CreateNew.vue';
 
 Vue.use(Router);
 
@@ -34,6 +35,9 @@ const router = new Router({
     },{
         path: '',
         redirect: '/home'
+    },{
+        path: '/create-new',
+        component: CreateNew
     }]
 });
 
