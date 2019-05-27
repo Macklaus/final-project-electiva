@@ -30,4 +30,13 @@ body{
 #app{
   min-width: 300px;
 }
+
+.error{
+  color: #F57F6C;
+  font-size: 14px;
+}
+
+.form-error{
+  border: 2px solid #F57F6C;
+}
 </style>

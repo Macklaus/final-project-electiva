@@ -1,13 +1,20 @@
 <template>
     <div class="new-container">
-        <div class="new-title"><h1>Title</h1></div>
-        <p class="new-content">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam quibusdam officia hic, pariatur exercitationem, culpa accusantium, nulla dolorem maiores quos in qui itaque. Nobis a esse sint voluptas sunt saepe!</p>
+        <div class="new-title"><h1>{{item.title}}</h1></div>
+        <p class="new-content">{{item.content.substring(0,200)}}...</p>
         <div class="new-footer">
-            <h4 class="new-type">Type: <em>world new</em></h4>
-            <button class="button new-read-more">Read More</button>
+            <h4 class="new-type">Type: <em>{{item.type}} new</em></h4>
+            <router-link class="button new-read-more" :to="`/new/${item.id}`">Read More</router-link>
         </div>
     </div>
 </template>
+
+<script>
+export default {
+    props: ['item']
+}
+</script>
+
 
 <style scoped>
 .new-container{

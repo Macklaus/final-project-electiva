@@ -5,6 +5,7 @@ import Singup from '@/views/Singup.vue';
 import Home from '@/views/Home.vue';
 import config from '@/config';
 import CreateNew from '@/views/CreateNew.vue';
+import NewDetail from '@/views/NewDetail.vue';
 
 Vue.use(Router);
 
@@ -38,6 +39,9 @@ const router = new Router({
     },{
         path: '/create-new',
         component: CreateNew
+    },{
+        path: '/new/:id',
+        component: NewDetail
     }]
 });
 

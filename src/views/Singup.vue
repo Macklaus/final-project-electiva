@@ -2,10 +2,34 @@
     <div class="singup-container">
         <div class="card">
             <h2 class="card-title">Sing Up</h2>
-            <input type="text" class="input-form" placeholder="Complete name" v-model="realm">
-            <input type="text" class="input-form" placeholder="Username" v-model="username">
-            <input type="text" class="input-form" placeholder="Email" v-model="email">
-            <input type="password" class="input-form" placeholder="Password" v-model="password">
+
+            <input type="text" :class="{'input-form': true, 'form-error': $v.realm.$error}" 
+                placeholder="Complete name" v-model.trim.lazy="$v.realm.$model">
+            <div v-if="$v.realm.$dirty" class="error-container">
+                <div class="error" v-if="!$v.realm.required">* Field is required</div>
+                <div class="error" v-if="!$v.realm.alpha">* Field accepts only alphabet characters</div>
+            </div>
+
+            <input type="text" :class="{'input-form': true, 'form-error': $v.username.$error}" 
+                placeholder="Username" v-model="$v.username.$model">
+            <div v-if="$v.username.$dirty" class="error-container">
+                <div class="error" v-if="!$v.username.required">* Field is required</div>
+            </div>
+
+            <input type="text" :class="{'input-form': true, 'form-error': $v.email.$error}" 
+                placeholder="Email" v-model="$v.email.$model">
+            <div v-if="$v.email.$dirty" class="error-container">
+                <div class="error" v-if="!$v.email.required">* Field is required</div>
+                <div class="error" v-if="!$v.email.email">* Field accepts valid email addresses.</div>
+            </div>
+
+            <input type="password" :class="{'input-form': true, 'form-error': $v.password.$error}" 
+                placeholder="Password" v-model="$v.password.$model">
+            <div v-if="$v.password.$dirty" class="error-container">
+                <div class="error" v-if="!$v.password.required">* Field is required</div>
+                <div class="error" v-if="!$v.password.minLength">* Password must have at least {{$v.password.$params.minLength.min}} letters.</div>
+            </div>
+
             <button class="button submit-singup" @click="registerNewUser()" :disabled="loading">
                 {{ loading ? 'loading' : 'Sing Up' }}
             </button>
@@ -16,6 +40,7 @@
 <script>
 import Axios from 'axios';
 import config from '@/config';
+import { required, minLength, alpha, email } from 'vuelidate/lib/validators';
 export default {
     data(){
         return {
@@ -26,15 +51,37 @@ export default {
             loading: false
         }
     },
+    validations:{
+        realm:{
+            required,
+            alpha
+        },
+        username:{
+            required
+        },
+        email:{
+            required,
+            email
+        },
+        password:{
+            required,
+            minLength: minLength(6)
+        }
+    },
     methods: {
         registerNewUser() {
+            if(this.$v.$invalid){
+                this.$v.$touch();
+                return;
+            }
+            
             this.loading = true;
             Axios.post(config.URLs.SING_UP, {
-                realm: this.realm,
-                username: this.username,
-                email: this.email,
+                realm: this.$v.realm.$model,
+                username: this.$v.username.$model,
+                email: this.$v.email.$model,
                 emailVerified: true,
-                password: this.password
+                password: this.$v.password.$model
             }).then(response => {
                 this.$noty.success(config.MESSAGES.SING_UP);
                 this.$router.push(config.ROUTES.LOGIN);
@@ -50,11 +97,11 @@ export default {
 
 <style>
 .singup-container{
-    padding-top: 40px;
+    padding-top: 20px;
 }
 
 .submit-singup{
-    margin-top: 30px;
+    margin-top: 20px;
     color: #2F1A45;
     font-size: 18px;
     background-color: #0FB9B4;

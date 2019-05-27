@@ -52,7 +52,7 @@ export default {
 
 <style>
 .navbar-container{
-    width: 100vw;
+    width: 100%;
     min-width: 300px;
     background-color: #FFFFFF;
     padding: 0.8em 1.1em;

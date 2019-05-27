@@ -13,7 +13,8 @@ export default {
         TYPES_ERROR: 'Oops, something went wrong getting types of news',
         SING_UP: 'User has been created successfully',
         NO_IMAGE_SET: 'Please, choose a image for the new',
-        NEW_CREATED: 'New has been created successfully!'
+        NEW_CREATED: 'New has been created successfully!',
+        NO_TYPE_SELECTED: 'Please, select a type of new'
     },
     URLs: {
         LOGIN: urlUsers + '/login',

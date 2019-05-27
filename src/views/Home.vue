@@ -1,7 +1,7 @@
 <template>
     <div class="home-container">
-        <h1 class="home-title">Lastes News</h1>
-        <New/>
+        <h1 class="home-title">Lastest News</h1>
+        <New v-for="newItem in news" :key="newItem.id" :item="newItem"/>
     </div>
 </template>
 
@@ -11,24 +11,45 @@ import Axios from 'axios';
 import config from '@/config';
 
 export default {
+    data(){
+        return {
+            news: [],
+            types: []
+        }
+    },
     components: {
         New
     },
     mounted(){
         this.getTypes();
+        this.getNews();
     },
     methods: {
         getTypes(){
             if(localStorage.getItem(config.STORAGE.TYPES)){
-                this.$root.typeNews = JSON.parse(localStorage.getItem(config.STORAGE.TYPES));
+                let items = JSON.parse(localStorage.getItem(config.STORAGE.TYPES));
+                this.$root.typeNews = items;
+                this.types = items;
                 return;
             } 
             Axios.get(config.URLs.TYPES).then(response => {
                 localStorage.setItem(config.STORAGE.TYPES, JSON.stringify(response.data));
                 this.$root.typeNews = response.data;
+                this.types = response.data;
             }).catch(({response}) => {
                 this.$noty.error(config.MESSAGES.TYPES_ERROR);
             })
+        },
+        getNews(){
+            Axios.get(config.URLs.NEWS).then(response => {
+                this.news = response.data.reverse();
+                this.news.forEach(newItem => {
+                    let curType = this.types.find(type => type.typeId === newItem.type);
+                    newItem.type = curType.name;
+                });
+            }).catch(({response}) => {
+                this.$noty.error(config.MESSAGES.ERROR);
+            });
         }
     }
 }

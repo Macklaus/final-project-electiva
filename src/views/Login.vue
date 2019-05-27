@@ -82,7 +82,7 @@ export default {
 
 .card-title{
     font-size: 35px;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
     padding-bottom: 10px;
     color: #fff;
     font-family: 'Asap', sans-serif;
@@ -92,6 +92,7 @@ export default {
 .input-form{
     padding: 15px;
     font-size: 14px;
+    margin-bottom: 5px;
 }
 
 .submit-login{

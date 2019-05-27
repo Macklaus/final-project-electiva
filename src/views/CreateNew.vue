@@ -21,19 +21,32 @@
             </picture-input>
         </div>
         <div class="create-new-data-container">
-            <select name="" id="" v-model="type.typeId" class="create-new-form">
+            <select name="" id="" v-model="$v.type.$model.typeId" :class="{'create-new-form': true, 'form-error': $v.type.$error}">
                 <option value="" selected>Select a type</option>
                 <option :value="item.typeId" v-for="item in types" :key="item.typeId">
                     {{item.name}}
                 </option>
             </select>
-            <input type="text" class="create-new-form" v-model="title" placeholder="Title">
+            <div v-if="$v.$dirty" class="error-container">
+                <div class="error" v-if="!$v.type.$model.typeId">* {{noTypeSelected}}</div>
+            </div>
+
+            <input type="text" v-model="$v.title.$model" placeholder="Title" :class="{'create-new-form': true, 'form-error': $v.title.$error}">
+            <div v-if="$v.title.$dirty" class="error-container">
+                <div class="error" v-if="!$v.title.required">* Field is required</div>
+                <div class="error" v-if="!$v.title.minLength">* Title must have at least {{$v.title.$params.minLength.min}} letters.</div>
+            </div>
+
             <textarea 
             name="" id="" cols="30" rows="10" 
-            class="create-new-form" 
-            v-model="content" 
+            :class="{'create-new-form-txt-area': true, 'form-error': $v.content.$error}"
+            v-model.trim.lazy="$v.content.$model" 
             placeholder="Type some content...">
             </textarea>
+            <div v-if="$v.content.$dirty" class="error-container">
+                <div class="error" v-if="!$v.content.required">* Field is required</div>
+                <div class="error" v-if="!$v.content.minLength">* Content must have at least {{$v.content.$params.minLength.min}} letters.</div>
+            </div>
             <button class="button create-new-button" @click="createNew()" :disabled="loading">
                 {{loading ? 'loading' : 'Create News'}}
             </button>
@@ -47,6 +60,7 @@ import PictureInput from 'vue-picture-input';
 import config from '@/config';
 import Axios from 'axios';
 import { isNullOrUndefined } from 'util';
+import { required, minLength, alpha, email } from 'vuelidate/lib/validators';
 export default {
     mounted(){
         this.getTypes();
@@ -61,7 +75,21 @@ export default {
             type: {},
             title: '',
             content: '',
-            loading: false
+            loading: false,
+            noTypeSelected: config.MESSAGES.NO_TYPE_SELECTED
+        }
+    },
+    validations:{
+        type:{
+            required
+        },
+        title:{
+            required,
+            minLength: minLength(2)
+        },
+        content:{
+            required,
+            minLength: minLength(200)
         }
     },
     methods: {
@@ -86,6 +114,10 @@ export default {
             })
         },
         createNew(){
+            this.$v.$touch();
+            if(this.$v.$invalid){
+                return;
+            }
             if(isNullOrUndefined(this.image)){
                 this.$noty.warning(config.MESSAGES.NO_IMAGE_SET);
                 return;
@@ -95,6 +127,10 @@ export default {
                 this.$router.push(config.ROUTES.LOGIN);
                 return;
             }
+            if(!this.$v.type.$model.typeId){
+                this.$noty.warning(config.MESSAGES.NO_TYPE_SELECTED);
+                return;
+            }
             this.loading = true;
             const form = new FormData();
             form.append('file', this.image);
@@ -102,9 +138,9 @@ export default {
             form.append('api_key', process.env.VUE_APP_CLOUDINARY_API_KEY);
             Axios.post(config.URLs.CLOUDINARY, form).then(response => {
                 Axios.post(config.URLs.NEWS, {
-                    type: this.type.typeId,
-                    title: this.title,
-                    content: this.content,
+                    type: this.$v.type.$model.typeId,
+                    title: this.$v.title.$model,
+                    content: this.$v.content.$model,
                     imageUrl: response.data.secure_url,
                     userId: this.$root.auth.userId
                 },{
@@ -164,10 +200,20 @@ export default {
         display: flex;
         flex-flow: row wrap;
     }
-    .create-new-form{
+    .create-new-form, .create-new-form-txt-area{
         width: 100%;
-        margin-bottom: 30px;
+        margin-bottom: 5px;
         padding: 5px 10px;
+    }
+    .create-new-form-txt-area{
+        margin-top: 30px;
+    }
+    .create-new-form{
+        height: 3em;
+        min-height: 30px;
+    }
+    .create-new-form:nth-child(n+2){
+        margin-top: 30px;
     }
     .create-new-button, .set-image{
         background-color: #0FB9B4;
